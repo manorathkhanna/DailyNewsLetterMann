@@ -7,10 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/13tG_l2GH8aUmhlWJ6fVN_RQnwNKNsXy6
 """
 
-!pip install openai requests feedparser pandas
 
-import feedparser
-import pandas as pd
 
 # RSS sources
 rss_feeds = {
