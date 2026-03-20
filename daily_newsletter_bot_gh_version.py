@@ -383,19 +383,19 @@ from email.mime.text import MIMEText
 import os
 
 sender_email = os.getenv("SENDER_EMAIL")
-receiver_email = os.getenv("RECEIVER_EMAIL")
+receiver_emails = os.getenv("RECEIVER_EMAIL").split(",")
 app_password = os.getenv("APP_PASSWORD")
 
 # Create email
 msg = MIMEText(structured_newsletter)
 msg["Subject"] = "Daily Capsule"
 msg["From"] = sender_email
-msg["To"] = receiver_email
+msg["To"] = ", ".join(receiver_emails)
 
 # Send email
 server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
 server.login(sender_email, app_password)
-server.send_message(msg)
+server.sendmail(sender_email, receiver_emails, msg.as_string())
 server.quit()
 
 print("✅ Newsletter sent successfully!")
