@@ -28,4 +28,4 @@ jobs:
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
           APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
-        run: daily_newsletter_bot_gh_version.py
+        run: python daily_newsletter_bot_gh_version.py
