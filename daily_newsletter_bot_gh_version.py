@@ -77,30 +77,30 @@ headline_list = "\n".join(
     [f"{i+1}. {title}" for i, title in enumerate(clean_df["title"].tolist()[:80])]
 )
 
-prompt = f"""
-You are a global macro news analyst.
+cluster_prompt = f"""
+You are a global macro analyst.
 
-From the following list of headlines, select the 10 most important stories.
+From the following headlines, DO NOT list headlines.
 
-Focus on stories related to:
-- global markets
-- economic policy
-- geopolitics
-- technology shifts
-- regulation
+Instead:
 
-Ignore:
-- celebrity news
-- crime
-- local events
-- minor company announcements
+Step 1: Group related headlines into 3–5 underlying STORIES.
+(A story = a broader trend or theme, not a single event)
 
-Return ONLY the selected headlines.
+Step 2: For each story, provide:
+
+1. Story Title (1 line)
+2. Key Triggers (which headlines contributed)
+3. Why this is a SIGNAL (not noise)
+
+Rules:
+- Merge similar headlines into one story
+- Ignore minor or repetitive items
+- Focus on macro shifts (markets, tech, geopolitics)
 
 Headlines:
 {headline_list}
 """
-
 response = client.chat.completions.create(
     model="gpt-5-mini",
     messages=[
@@ -114,20 +114,26 @@ important_news = response.choices[0].message.content
 print(important_news)
 
 analysis_prompt = f"""
-You are a global macro analyst writing for a daily newsletter.
+You are a global macro strategist.
 
-For each of the following news stories provide:
+Convert the following STORIES into a CROSS-IMPACT MATRIX.
 
-1. What happened (1-2 sentences)
-2. Why it matters (1-2 sentences)
-3. Potential market or geopolitical impact
+For each story, provide:
 
-Keep explanations concise and insightful.
+1. Story Title
+2. Market Impact (money flows, valuations, sectors)
+3. Geopolitical Impact (power shifts, policy, global positioning)
+4. Tech Impact (capabilities, infra, innovation direction)
+5. What It Really Means (deep insight, not obvious)
+
+Rules:
+- Each story must be unique (no overlap)
+- Keep each field 1–2 lines
+- Avoid generic statements
 
 Stories:
 {important_news}
 """
-
 response = client.chat.completions.create(
     model="gpt-5-mini",
     messages=[
@@ -144,29 +150,44 @@ from datetime import datetime
 
 today = datetime.now().strftime("%d %B %Y")
 
-newsletter_prompt = f"""
-You are writing a concise daily briefing newsletter called "Daily Capsule".
+matrix_section = f"""
+🔗 Cross-Impact Matrix
 
-Use the analysis below and convert it into a clean newsletter.
+{news_analysis}
+"""
+
+structured_prompt = f"""
+You are writing a sharp daily newsletter.
 
 Structure:
 
 Daily Capsule
 Date: {today}
 
-Top Global Developments
-- Present the key stories clearly
+🌤️ Weather — Hyderabad (Gachibowli)
+{weather_text}
 
-Technology Signals
-- Highlight technology-related developments
+💡 Thought of the Day
+{quote_section}
 
-Geopolitical & Market Impact
-- Summarize major macro implications
+🔗 Cross-Impact Matrix
+- Present in clean table-like format
+- Each story clearly separated
 
-Keep the writing sharp, clear and insightful.
-Avoid repeating the same sentences.
+📊 Markets
+- ONLY patterns in capital flow (no repetition of matrix)
 
-Analysis:
+🧠 Technology
+- ONLY capability/product shifts
+
+🌍 Geopolitics
+- ONLY power/policy shifts
+
+Rules:
+- DO NOT repeat same story across sections
+- Each section must add NEW insight
+
+Data:
 {news_analysis}
 """
 
@@ -284,21 +305,22 @@ weather_text = response.choices[0].message.content
 
 print(weather_text)
 
-quote_prompt = """
-You are curating a 'Thought of the Day' for a sharp, ambitious audience.
+quote_prompt = f"""
+You are writing a 'Thought of the Day'.
 
-Pick:
-- A quote from a well-known thinker (business leader, philosopher, scientist, etc.)
+Pick ONE story from the matrix below.
 
-Then provide:
-The quote (1 line), Who said it
-A simple interpretation (2–3 lines, practical, not philosophical fluff)
+Then derive:
+1. A sharp original insight (1 line)
+2. A practical interpretation (2 lines)
 
 Rules:
-- Avoid overused quotes
-- Keep it fresh and meaningful
-- Make interpretation applicable to work/life decisions
-- Make the interpretation feel like advice from a smart mentor, not a philosopher.
+- DO NOT use famous quotes
+- Must feel contextual to today's news
+- Should feel like advice from a sharp operator
+
+Stories:
+{news_analysis}
 """
 
 response = client.chat.completions.create(
