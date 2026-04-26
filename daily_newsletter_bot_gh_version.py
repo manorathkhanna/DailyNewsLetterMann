@@ -104,8 +104,8 @@ Headlines:
 response = client.chat.completions.create(
     model="gpt-5-mini",
     messages=[
-        {"role": "system", "content": "You are a financial news analyst."},
-        {"role": "user", "content": prompt}
+        {"role": "system", "content": "You are a global macro analyst."},
+        {"role": "user", "content": cluster_prompt}
     ],
 )
 
@@ -116,24 +116,28 @@ print(important_news)
 analysis_prompt = f"""
 You are a global macro strategist.
 
-Convert the following STORIES into a CROSS-IMPACT MATRIX.
+Convert the following STORIES into a STRICT STRUCTURED FORMAT.
 
-For each story, provide:
+For each story, output EXACTLY:
 
-1. Story Title
-2. Market Impact (money flows, valuations, sectors)
-3. Geopolitical Impact (power shifts, policy, global positioning)
-4. Tech Impact (capabilities, infra, innovation direction)
-5. What It Really Means (deep insight, not obvious)
+---
+Story: <title>
+Market: <impact>
+Geopolitics: <impact>
+Technology: <impact>
+Meaning: <deep insight>
+---
 
 Rules:
-- Each story must be unique (no overlap)
-- Keep each field 1–2 lines
-- Avoid generic statements
+- 3–5 stories ONLY
+- Use this EXACT format
+- No paragraphs outside this structure
+- No merging of stories
 
 Stories:
 {important_news}
 """
+
 response = client.chat.completions.create(
     model="gpt-5-mini",
     messages=[
@@ -156,52 +160,6 @@ matrix_section = f"""
 {news_analysis}
 """
 
-structured_prompt = f"""
-You are writing a sharp daily newsletter.
-
-Structure:
-
-Daily Capsule
-Date: {today}
-
-🌤️ Weather — Hyderabad (Gachibowli)
-{weather_text}
-
-💡 Thought of the Day
-{quote_section}
-
-🔗 Cross-Impact Matrix
-- Present in clean table-like format
-- Each story clearly separated
-
-📊 Markets
-- ONLY patterns in capital flow (no repetition of matrix)
-
-🧠 Technology
-- ONLY capability/product shifts
-
-🌍 Geopolitics
-- ONLY power/policy shifts
-
-Rules:
-- DO NOT repeat same story across sections
-- Each section must add NEW insight
-
-Data:
-{news_analysis}
-"""
-
-response = client.chat.completions.create(
-    model="gpt-5-mini",
-    messages=[
-        {"role": "system", "content": "You are an editor of a global financial newsletter."},
-        {"role": "user", "content": newsletter_prompt}
-    ],
-)
-
-newsletter_text = response.choices[0].message.content
-
-print(newsletter_text)
 
 business_prompt = f"""
 You are a sharp business analyst.
@@ -335,16 +293,14 @@ quote_section = response.choices[0].message.content
 
 print(quote_section)
 
-structured_prompt = f"""
-You are writing a sharp, engaging daily newsletter for a Gen-Z audience.
+final_prompt = f"""
+You are writing a sharp, high-signal daily newsletter.
 
 Style:
-- Short sentences
-- Conversational tone
-- No jargon
-- Break lines frequently
-- Easy to scan on phone
-- Slight personality, but not cringe
+- Crisp
+- Insight-first
+- No repetition
+- No fluff
 
 Structure:
 
@@ -357,44 +313,38 @@ Date: {today}
 💡 Thought of the Day
 {quote_section}
 
-📊 Markets
-Hook: A sharp one-line summary of what's happening in markets
+🔗 Cross-Impact Matrix
+- Present clearly (table-like)
+- 3–5 stories max
 
-- Each update in 1–2 lines
-- Then: "Why it matters:" (1 line)
+📊 Markets
+- ONLY capital flow + investor behavior
+- No repetition from matrix
 
 🧠 Technology
-Hook: One-line takeaway
-
-- Updates
-- Why it matters
+- ONLY capability shifts (AI, infra, product evolution)
 
 🌍 Geopolitics
-Hook: One-line takeaway
-
-- Updates
-- Why it matters
+- ONLY power shifts, policy, global strategy
 
 Rules:
-- Hooks should feel sharp and insightful (Don't mention as hook - just highlight as heading)
-- No generic lines like "Markets are mixed"
-- Make it feel like a strong opening line
+- Do NOT repeat same story across sections
+- Each section must add new insight
+- Avoid generic lines
 
-Stories:
+Data:
 {news_analysis}
 """
 
 response = client.chat.completions.create(
     model="gpt-5-mini",
     messages=[
-        {"role": "system", "content": "You are a sharp financial editor."},
-        {"role": "user", "content": structured_prompt}
+        {"role": "system", "content": "You are a top-tier macro newsletter editor."},
+        {"role": "user", "content": final_prompt}
     ],
 )
 
-structured_newsletter = response.choices[0].message.content
-
-print(structured_newsletter)
+final_newsletter = response.choices[0].message.content
 
 import smtplib
 from email.mime.text import MIMEText
@@ -409,7 +359,7 @@ receiver_emails = os.getenv("RECEIVER_EMAIL").split(",")
 app_password = os.getenv("APP_PASSWORD")
 
 # Create email
-msg = MIMEText(structured_newsletter)
+msg = MIMEText(final_newsletter)
 msg["Subject"] = "Daily Capsule"
 msg["From"] = sender_email
 msg["To"] = ", ".join(receiver_emails)
