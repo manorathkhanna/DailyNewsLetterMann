@@ -157,6 +157,15 @@ today = datetime.now().strftime("%d %B %Y")
 matrix_section = f"""
 🔗 Cross-Impact Matrix
 
+For each story use this format:
+
+[Story Title]
+→ Market:
+→ Geo:
+→ Tech:
+→ Meaning:
+
+(leave one line gap between stories)
 {news_analysis}
 """
 
@@ -276,6 +285,8 @@ Rules:
 - DO NOT use famous quotes
 - Must feel contextual to today's news
 - Should feel like advice from a sharp operator
+- 1 sharp insight (max 15 words)
+- 1 practical takeaway (max 20 words)
 
 Stories:
 {news_analysis}
@@ -307,6 +318,9 @@ Structure:
 Daily Capsule
 Date: {today}
 
+⚡ Today’s Signal
+<1 line summarizing entire newsletter>
+
 🌤️ Weather — Hyderabad (Gachibowli)
 {weather_text}
 
@@ -331,6 +345,10 @@ Rules:
 - Do NOT repeat same story across sections
 - Each section must add new insight
 - Avoid generic lines
+- ALWAYS add line breaks between sections
+- Each section must start on a new line
+- Limit each section to 3–4 bullets MAX
+- Prioritize highest signal only
 
 Data:
 {news_analysis}
